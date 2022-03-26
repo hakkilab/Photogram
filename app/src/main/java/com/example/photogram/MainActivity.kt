@@ -8,6 +8,8 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -42,6 +44,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.logout) {
+            ParseUser.logOut()
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     fun submitPost(description: String, picture: File, user: ParseUser) {
         val post = Post()
         post.setDescription(description)
@@ -57,6 +74,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Post successfully submitted", Toast.LENGTH_SHORT).show()
                 findViewById<EditText>(R.id.etDescription).setText("")
                 findViewById<ImageView>(R.id.ivPhoto).setImageBitmap(null)
+                photoFile = null
             }
         }
     }
