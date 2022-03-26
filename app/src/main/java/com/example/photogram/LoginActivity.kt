@@ -19,13 +19,13 @@ class LoginActivity : AppCompatActivity() {
             goToMainActivity()
         }
 
-        findViewById<Button>(R.id.loginButton).setOnClickListener {
+        findViewById<Button>(R.id.btnLogin).setOnClickListener {
             val username = findViewById<EditText>(R.id.etUsername).text.toString()
             val password = findViewById<EditText>(R.id.etPassword).text.toString()
             loginUser(username, password)
         }
 
-        findViewById<Button>(R.id.signUpButton).setOnClickListener {
+        findViewById<Button>(R.id.btnSignUp).setOnClickListener {
             val username = findViewById<EditText>(R.id.etUsername).text.toString()
             val password = findViewById<EditText>(R.id.etPassword).text.toString()
             signUpUser(username, password)
