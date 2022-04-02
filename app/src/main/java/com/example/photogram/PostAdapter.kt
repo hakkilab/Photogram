@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class PostAdapter(val context: Context,  val posts: List<Post>)
+class PostAdapter(val context: Context,  val posts: MutableList<Post>)
     : RecyclerView.Adapter<PostAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostAdapter.ViewHolder {
@@ -24,6 +24,16 @@ class PostAdapter(val context: Context,  val posts: List<Post>)
 
     override fun getItemCount(): Int {
         return posts.size
+    }
+
+    fun clear() {
+        posts.clear()
+        notifyDataSetChanged()
+    }
+
+    fun addAll(postList: List<Post>) {
+        posts.addAll(postList)
+        notifyDataSetChanged()
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
