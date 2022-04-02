@@ -16,7 +16,7 @@ import com.parse.FindCallback
 import com.parse.ParseException
 import com.parse.ParseQuery
 
-class FeedFragment : Fragment() {
+open class FeedFragment : Fragment() {
 
     lateinit var rvFeed: RecyclerView
     lateinit var adapter: PostAdapter
@@ -42,7 +42,7 @@ class FeedFragment : Fragment() {
         queryPosts()
     }
 
-    fun queryPosts() {
+    open fun queryPosts() {
         val query: ParseQuery<Post> = ParseQuery.getQuery(Post::class.java)
 
         query.include(Post.KEY_USER)
