@@ -52,7 +52,7 @@ class ComposeFragment : Fragment() {
             if (photoFile != null) {
                 submitPost(description, photoFile!!, user)
             } else {
-                Log.e(MainActivity.TAG, "Photo file is null")
+                Log.e(TAG, "Photo file is null")
                 Toast.makeText(requireContext(), "Must take a picture to submit a post", Toast.LENGTH_SHORT).show()
             }
         }
@@ -69,11 +69,11 @@ class ComposeFragment : Fragment() {
         post.setUser(user)
         post.saveInBackground { exception ->
             if (exception != null) {
-                Log.e(MainActivity.TAG, "Error while saving post")
+                Log.e(TAG, "Error while saving post")
                 exception.printStackTrace()
                 Toast.makeText(requireContext(), "Error while saving post", Toast.LENGTH_SHORT).show()
             } else {
-                Log.i(MainActivity.TAG, "Successfully saved post")
+                Log.i(TAG, "Successfully saved post")
                 Toast.makeText(requireContext(), "Post successfully submitted", Toast.LENGTH_SHORT).show()
                 etDescription.setText("")
                 ivPhoto.setImageBitmap(null)
@@ -111,12 +111,16 @@ class ComposeFragment : Fragment() {
 
     fun getPhotoFileUri(fileName: String): File {
         val mediaStorageDir =
-            File(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), MainActivity.TAG)
+            File(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG)
 
         if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
-            Log.d(MainActivity.TAG, "Failed to create directory")
+            Log.d(TAG, "Failed to create directory")
         }
 
         return File(mediaStorageDir.path + File.separator + fileName)
+    }
+
+    companion object {
+        const val TAG = "ComposeFragment"
     }
 }
