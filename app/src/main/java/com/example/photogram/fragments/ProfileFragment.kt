@@ -24,8 +24,10 @@ class ProfileFragment : FeedFragment() {
                         for (post in posts) {
                             Log.i(TAG, "Post: " + post.getDescription() + ", username: " + post.getUser()?.username)
                         }
+                        adapter.clear()
                         allPosts.addAll(posts)
                         adapter.notifyDataSetChanged()
+                        swipeContainer.isRefreshing = false
                     }
                 }
             }
