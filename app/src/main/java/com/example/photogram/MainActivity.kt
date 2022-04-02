@@ -1,47 +1,55 @@
 package com.example.photogram
 
 import android.content.Intent
-import android.graphics.BitmapFactory
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
-import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
-import androidx.core.content.FileProvider
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import com.example.photogram.fragments.ComposeFragment
+import com.example.photogram.fragments.FeedFragment
+import com.example.photogram.fragments.ProfileFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.parse.*
-import java.io.File
 
 class MainActivity : AppCompatActivity() {
-
-    val CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1034
-    val photoFileName = "photo.jpg"
-    var photoFile: File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<Button>(R.id.btnTakePicture).setOnClickListener {
-            onLaunchCamera()
+        val fragmentManager: FragmentManager = supportFragmentManager
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
+
+        bottomNavigationView.setOnItemSelectedListener {
+            item ->
+
+            var fragmentToShow: Fragment? = null
+
+            when (item.itemId) {
+                R.id.action_home -> {
+                    fragmentToShow = FeedFragment()
+                }
+
+                R.id.action_compose -> {
+                    fragmentToShow = ComposeFragment()
+                }
+
+                R.id.action_profile -> {
+                    fragmentToShow = ProfileFragment()
+                }
+            }
+
+            if (fragmentToShow != null) {
+                fragmentManager.beginTransaction().replace(R.id.flContainer, fragmentToShow).commit()
+            }
+
+            true
         }
 
-        findViewById<Button>(R.id.btnSubmit).setOnClickListener {
-            val description = findViewById<EditText>(R.id.etDescription).text.toString()
-            val user = ParseUser.getCurrentUser()
-            if (photoFile != null) {
-                submitPost(description, photoFile!!, user)
-            } else {
-                Log.e(TAG, "Photo file is null")
-                Toast.makeText(this, "Must take a picture to submit a post", Toast.LENGTH_SHORT).show()
-            }
-        }
+        bottomNavigationView.selectedItemId = R.id.action_home
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -57,65 +65,6 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    fun submitPost(description: String, picture: File, user: ParseUser) {
-        val post = Post()
-        post.setDescription(description)
-        post.setImage(ParseFile(picture))
-        post.setUser(user)
-        post.saveInBackground { exception ->
-            if (exception != null) {
-                Log.e(TAG, "Error while saving post")
-                exception.printStackTrace()
-                Toast.makeText(this, "Error while saving post", Toast.LENGTH_SHORT).show()
-            } else {
-                Log.i(TAG, "Successfully saved post")
-                Toast.makeText(this, "Post successfully submitted", Toast.LENGTH_SHORT).show()
-                findViewById<EditText>(R.id.etDescription).setText("")
-                findViewById<ImageView>(R.id.ivPhoto).setImageBitmap(null)
-                photoFile = null
-            }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                val takenImage = BitmapFactory.decodeFile(photoFile!!.absolutePath)
-                val ivPreview: ImageView = findViewById(R.id.ivPhoto)
-                ivPreview.setImageBitmap(takenImage)
-            } else {
-                Toast.makeText(this, "Picture wasn't taken", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    fun onLaunchCamera() {
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        photoFile = getPhotoFileUri(photoFileName)
-
-        if (photoFile != null) {
-            val fileProvider: Uri =
-                FileProvider.getUriForFile(this, "com.codepath.fileprovider", photoFile!!)
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider)
-
-            if (intent.resolveActivity(packageManager) != null) {
-                startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE)
-            }
-        }
-    }
-
-    fun getPhotoFileUri(fileName: String): File {
-        val mediaStorageDir =
-            File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG)
-
-        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
-            Log.d(TAG, "Failed to create directory")
-        }
-
-        return File(mediaStorageDir.path + File.separator + fileName)
     }
 
     fun queryPosts() {
@@ -138,6 +87,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val TAG = "MainActivity"
+        const val TAG = "MainActivity"
     }
 }
